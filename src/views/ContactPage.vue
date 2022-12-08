@@ -43,38 +43,52 @@
         <div class="row">
           <div class="col-md-6">
             <div class="mail_section">
-              <form>
-                <input
-                  v-model="name"
-                  type=""
-                  class="email_text"
-                  placeholder="Name"
-                  name="Name"
-                />
-                <input
-                  v-model="email"
-                  type=""
-                  class="email_text"
-                  placeholder="Email"
-                  name="Email"
-                />
-                <input
-                  v-model="phone_number"
-                  type=""
-                  class="email_text"
-                  placeholder="Phone Number"
-                  name="Phone Number"
-                />
-                <textarea
-                  v-model="message"
-                  class="massage_text"
-                  placeholder="Message"
-                  rows="5"
-                  id="comment"
-                  name="Message"
-                ></textarea>
-                <div class="send_bt" @click.prevent="getUserFormDetails()">
-                  <a href="#">send</a>
+              <form @submit.prevent="submitForm">
+                <div>
+                  <input
+                    v-model="form.name"
+                    type=""
+                    class="email_text"
+                    placeholder="Name"
+                    name="Name"
+                  />
+                  <p v-if="!nameValidation">The name field is required</p>
+                </div>
+                <div>
+                  <input
+                    v-model="form.email"
+                    type="email"
+                    class="email_text"
+                    placeholder="Email"
+                    name="Email"
+                    pattern="^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$"
+                  />
+                  <p v-if="!emailValidation">The email field is required</p>
+                </div>
+                <div>
+                  <input
+                    v-model.number="form.phone"
+                    type=""
+                    class="email_text"
+                    placeholder="Phone Number"
+                    name="Phone Number"
+                    pattern="^(\+\d{1,3}[- ]?)?\d{10}$"
+                  />
+                </div>
+                <p v-if="!phoneNumberValidation">The phone field is required</p>
+                <div>
+                  <textarea
+                    v-model="form.message"
+                    class="massage_text"
+                    placeholder="Message"
+                    rows="5"
+                    id="comment"
+                    name="Message"
+                  ></textarea>
+                  <p v-if="!massageValidation">The message field is required</p>
+                </div>
+                <div class="send_bt">
+                  <button href="#">send</button>
                 </div>
               </form>
             </div>
@@ -126,20 +140,51 @@ export default {
   name: "ContactPage",
   data() {
     return {
-      name: "",
-      email: "",
-      phone_number: "",
-      message: "",
+      form: {
+        name: "",
+        email: "",
+        phone: "",
+        message: "",
+      },
     };
   },
+  computed: {
+    nameValidation() {
+      return !!this.form.name;
+    },
+    emailValidation() {
+      return !!this.form.email;
+    },
+    phoneNumberValidation() {
+      return typeof this.form.phone === "number";
+    },
+    massageValidation() {
+      return !!this.form.message;
+    },
+  },
   methods: {
-    getUserFormDetails() {
-      console.log(
-        "Name:" + this.name,
-        "\nEmail:" + this.email,
-        "\nPhone:" + this.phone_number,
-        "\nMessage:" + this.message
-      );
+    clearForm() {
+      for (let field in this.form) {
+        this.form[field] = "";
+      }
+    },
+    submitForm: function () {
+      const formValidation =
+        this.nameValidation &&
+        this.emailValidation &&
+        this.phoneNumberValidation &&
+        this.massageValidation;
+      if (formValidation) {
+        console.log(
+          "Name=" + this.form.name,
+          "\nEmail=" + this.form.email,
+          "\nPhone=" + this.form.phone,
+          "\nMessage=" + this.form.message
+        );
+        this.clearForm();
+      } else {
+        console.log("Invalid Form");
+      }
     },
   },
 };
